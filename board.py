@@ -5,20 +5,50 @@ from piece import *
 class Board():
     def __init__(self, screen) -> None:
         self.screen = screen
+        self.board_map = {}
         self.board = self.draw_board_array()
+        self.active_piece = None
 
     def draw_board_array(self):
         board = [["" for j in range(8)] for i in range(8)]
 
+        # Add a map of BoardSquare for easy access to each square
+        for i in range(8):
+            for j in range(8):
+                self.board_map[(i, j)] = BoardSquare(i, j)
+
         # pawns
         for i in range(8):
-            board[i][6] = "WP"
-            board[i][1] = "BP"
+            self.board_map[(i, 6)].piece = Pawn(self.screen, "WP", i, 6)
+            self.board_map[(i, 1)].piece = Pawn(self.screen, "BP", i, 1)
+            
 
-        board[1][0] = "BH"
-        board[6][0] = "BH"
-        board[1][7] = "WH"
-        board[6][7] = "WH"
+        # Place down the horsies
+        self.board_map[(1, 0)].piece = Knight(self.screen, "BH", 1, 0)
+        self.board_map[(6, 0)].piece = Knight(self.screen, "BH", 6, 0)
+        self.board_map[(1, 7)].piece = Knight(self.screen, "WH", 1, 7)
+        self.board_map[(6, 7)].piece = Knight(self.screen, "WH", 6, 7)
+
+        # THE ROOOOOOOOOOOOOOOOOOK
+        self.board_map[(0, 0)].piece = Rook(self.screen, "BR", 0, 0)
+        self.board_map[(7, 0)].piece = Rook(self.screen, "BR", 7, 0)
+        self.board_map[(0, 7)].piece = Rook(self.screen, "WR", 0, 7)
+        self.board_map[(7, 7)].piece = Rook(self.screen, "WR", 7, 7)
+
+        #Bishop Boys
+        self.board_map[(2, 0)].piece = Bishop(self.screen, "BB", 2, 0)
+        self.board_map[(5, 0)].piece = Bishop(self.screen, "BB", 5, 0)
+        self.board_map[(2, 7)].piece = Bishop(self.screen, "WB", 2, 7)
+        self.board_map[(5, 7)].piece = Bishop(self.screen, "WB", 5, 7)
+
+        # Oh no, my queen
+        self.board_map[(4, 0)].piece = Queen(self.screen, "BQ", 4, 0)
+        self.board_map[(4, 7)].piece = Queen(self.screen, "WQ", 4, 7)
+
+        # King ****
+        self.board_map[(3, 0)].piece = King(self.screen, "BK", 3, 0)
+        self.board_map[(3, 7)].piece = King(self.screen, "WK", 3, 7)
+
 
         print(board)
 
@@ -40,25 +70,24 @@ class Board():
                     const.SQUARE_SIZE
                     ])
 
+    # If there is a piece on the square, draw it
     def draw_pieces(self):
-        for i in range(len(self.board)):
-            for j in range(len(self.board[i])):
-                if self.board[i][j] == "WP":
-                    white_pawn = Pawn(self.screen, "WP", i, j)
-                    white_pawn.draw()
+        for i in range(ROWS):
+            for j in range(COLS):
+                if self.board_map[(i, j)].piece and not self.board_map[(i, j)].piece.moving:
+                    self.board_map[(i, j)].piece.draw(i * SQUARE_SIZE, j * SQUARE_SIZE)
 
-                if self.board[i][j] == "BP":
-                    black_pawn = Pawn(self.screen, "BP", i, j)
-                    black_pawn.draw()
-
-                if self.board[i][j] == "WH":
-                    white_horse = Knight(self.screen, "WH", i, j)
-                    white_horse.draw()
-
-                if self.board[i][j] == "BH":
-                    black_horse = Knight(self.screen, "BH", i, j)
-                    black_horse.draw()
+        if self.active_piece and self.active_piece.active:
+            self.active_piece.draw_moves()
 
     def draw(self):
         self.draw_board()
         self.draw_pieces()
+
+
+class BoardSquare:
+    def __init__(self, row, col) -> None:
+        self.row = row
+        self.col = col
+
+        self.piece = None
