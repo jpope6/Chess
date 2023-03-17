@@ -86,8 +86,13 @@ class Board():
         if not self.active_piece: return
         if (row, col) not in self.active_piece.possible_moves: return
         if self.turn != self.active_piece.color: return
-
+        
+        # The active pieces current square will be empty since it is moving
         self.board_map[(self.active_piece.row, self.active_piece.col)].piece = None
+
+        # If the piece is capturing another piece
+        if self.board_map[(row, col)].piece:
+            self.board_map[(row, col)].piece.captured = True
 
         self.board_map[(row, col)].piece = self.active_piece
         self.active_piece.row = row
@@ -95,10 +100,18 @@ class Board():
         self.active_piece.active = False
         self.active_piece.hasMoved = True
 
+        self.setMovesForAllPieces()
+        
         if self.turn == 'white':
             self.turn = 'black'
         else:
             self.turn = 'white'
+
+    def setMovesForAllPieces(self):
+        for square in self.board_map.values():
+            if square.piece:
+                square.piece.board_map = self.board_map
+                square.piece.setPossibleMoves()
 
     def draw(self):
         self.draw_board()

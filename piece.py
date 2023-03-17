@@ -20,17 +20,26 @@ class Piece():
 
         self.moving = False
 
+        self.captured = False
+
     def draw(self, row, col):
+        if self.captured: return
+
         rect = self.image.get_rect()
         rect.left = row
         rect.top = col
         self.screen.blit(self.image, rect)
 
+    def setPossibleMoves(self):
+        pass
+
  
     def draw_moves(self):
+        if self.captured: return
+
         for move in self.possible_moves:
             surface = pg.Surface((SQUARE_SIZE, SQUARE_SIZE), pg.SRCALPHA)
-            pg.draw.circle(surface, (0, 0, 0, 50) , (SQUARE_SIZE / 2, SQUARE_SIZE / 2), 15)
+            pg.draw.circle(surface, (255, 0, 0, 50) , (SQUARE_SIZE / 2, SQUARE_SIZE / 2), 15)
             scaled_move = (move[0] * SQUARE_SIZE, move[1] * SQUARE_SIZE)
             self.screen.blit(surface, (scaled_move))
 
@@ -71,7 +80,7 @@ class Pawn(Piece):
         # Moves if there is piece of opposite color on diagonal square 
         if self.color == "white":
             try: 
-                temp = self.board_map[(self.row - 1, self.col + 1)].piece
+                temp = self.board_map[(self.row - 1, self.col - 1)].piece
 
                 if temp and temp.color != self.color:
                     self.possible_moves.append((self.row - 1, self.col - 1))
@@ -79,10 +88,10 @@ class Pawn(Piece):
                 pass
 
             try: 
-                temp = self.board_map[(self.row - 1, self.col - 1)].piece
+                temp = self.board_map[(self.row + 1, self.col - 1)].piece
 
                 if temp and temp.color != self.color:
-                    self.possible_moves.append((self.row - 1, self.col - 1))
+                    self.possible_moves.append((self.row + 1, self.col - 1))
             except:
                 pass
 

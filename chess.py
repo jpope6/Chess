@@ -15,7 +15,6 @@ class Game:
     def play(self):
         while True:
             self.screen.fill(BLACK)
-            self.board.draw()
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -27,14 +26,14 @@ class Game:
 
                     if (mouse_x, mouse_y) in self.board.board_map:
                         board_square = self.board.board_map[(mouse_x, mouse_y)]
-                        if board_square.piece:
+                        if board_square.piece and board_square.piece.color == self.board.turn:
                             self.board.active_piece = board_square.piece;
                             self.board.active_piece.active = True
                         else:
                             if self.board.active_piece:
                                 self.board.move(mouse_x, mouse_y)
         
-
+            self.board.draw()
             pg.display.update()
 
 
