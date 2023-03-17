@@ -39,7 +39,7 @@ class Piece():
 
         for move in self.possible_moves:
             surface = pg.Surface((SQUARE_SIZE, SQUARE_SIZE), pg.SRCALPHA)
-            pg.draw.circle(surface, (255, 0, 0, 50) , (SQUARE_SIZE / 2, SQUARE_SIZE / 2), 15)
+            pg.draw.circle(surface, (57, 255, 20, 50) , (SQUARE_SIZE / 2, SQUARE_SIZE / 2), 15)
             scaled_move = (move[0] * SQUARE_SIZE, move[1] * SQUARE_SIZE)
             self.screen.blit(surface, (scaled_move))
 
@@ -65,16 +65,28 @@ class Pawn(Piece):
         # Moves if pawn has already moved 
         if self.hasMoved:
             if self.color == "white":
-                self.possible_moves = [(self.row, self.col - 1)]
+                # If there is no piece in front of the pawn
+                if not self.board_map[(self.row, self.col - 1)].piece:
+                    self.possible_moves = [(self.row, self.col - 1)]
             else:
-                self.possible_moves = [(self.row, self.col + 1)]
+                if not self.board_map[(self.row, self.col + 1)].piece:
+                    self.possible_moves = [(self.row, self.col + 1)]
             
         # Moves if pawn has not moved yet
+        #
+        # The max squares that a pawn can move is 2, so check up to 2 squares
+        # in front of the pawn and if there is no piece. If there is no piece
+        # then I know I can add the square to the possible moves
         if not self.hasMoved:
+            index = 1
             if self.color == 'white':
-                self.possible_moves = [(self.row, self.col - 1), (self.row, self.col - 2)]
+                while index <= 2 and not self.board_map[(self.row, self.col - index)].piece:
+                    self.possible_moves.append((self.row, self.col - index))
+                    index += 1
             else:
-                self.possible_moves = [(self.row, self.col + 1), (self.row, self.col + 2)]
+                while index <= 2 and not self.board_map[(self.row, self.col + index)].piece:
+                    self.possible_moves.append((self.row, self.col + index))
+                    index += 1
                 
           
         # Moves if there is piece of opposite color on diagonal square 
@@ -94,6 +106,23 @@ class Pawn(Piece):
                     self.possible_moves.append((self.row + 1, self.col - 1))
             except:
                 pass
+        else:
+            try: 
+                temp = self.board_map[(self.row - 1, self.col + 1)].piece
+
+                if temp and temp.color != self.color:
+                    self.possible_moves.append((self.row - 1, self.col + 1))
+            except:
+                pass
+
+            try: 
+                temp = self.board_map[(self.row + 1, self.col + 1)].piece
+
+                if temp and temp.color != self.color:
+                    self.possible_moves.append((self.row + 1, self.col + 1))
+            except:
+                pass
+
 
 
 

@@ -44,12 +44,12 @@ class Board():
         self.board_map[(5, 7)].piece = Bishop(self.screen, "WB", 5, 7, self.board_map)
 
         # Oh no, my queen
-        self.board_map[(4, 0)].piece = Queen(self.screen, "BQ", 4, 0, self.board_map)
-        self.board_map[(4, 7)].piece = Queen(self.screen, "WQ", 4, 7, self.board_map)
+        self.board_map[(3, 0)].piece = Queen(self.screen, "BQ", 3, 0, self.board_map)
+        self.board_map[(3, 7)].piece = Queen(self.screen, "WQ", 3, 7, self.board_map)
 
         # King ****
-        self.board_map[(3, 0)].piece = King(self.screen, "BK", 3, 0, self.board_map)
-        self.board_map[(3, 7)].piece = King(self.screen, "WK", 3, 7, self.board_map)
+        self.board_map[(4, 0)].piece = King(self.screen, "BK", 4, 0, self.board_map)
+        self.board_map[(4, 7)].piece = King(self.screen, "WK", 4, 7, self.board_map)
 
 
         print(board)
