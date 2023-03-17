@@ -30,8 +30,9 @@ class Game:
                         if board_square.piece:
                             self.board.active_piece = board_square.piece;
                             self.board.active_piece.active = True
-
-                            print("true")
+                        else:
+                            if self.board.active_piece:
+                                self.board.move(mouse_x, mouse_y)
         
 
             pg.display.update()
