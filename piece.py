@@ -65,11 +65,15 @@ class Pawn(Piece):
         # Moves if pawn has already moved 
         if self.hasMoved:
             if self.color == "white":
+                if self.col == 0: # If you are on the last square of the board
+                    pass
                 # If there is no piece in front of the pawn
-                if not self.board_map[(self.row, self.col - 1)].piece:
+                elif not self.board_map[(self.row, self.col - 1)].piece:
                     self.possible_moves = [(self.row, self.col - 1)]
             else:
-                if not self.board_map[(self.row, self.col + 1)].piece:
+                if self.col == 7: # If you are on the last square of the board
+                    pass
+                elif not self.board_map[(self.row, self.col + 1)].piece:
                     self.possible_moves = [(self.row, self.col + 1)]
             
         # Moves if pawn has not moved yet
@@ -124,9 +128,6 @@ class Pawn(Piece):
                 pass
 
 
-
-
-
 class Knight(Piece):
     def __init__(self, screen, name, row, col, board_map):
         if name[0] == 'W':
@@ -138,6 +139,13 @@ class Knight(Piece):
 
         super().__init__(screen, name, color, image, row, col, board_map)
 
+        self.setPossibleMoves()
+
+    def setPossibleMoves(self):
+        pass
+
+
+
 class Rook(Piece):
     def __init__(self, screen, name, row, col, board_map):
         if name[0] == 'W':
@@ -148,6 +156,79 @@ class Rook(Piece):
             image = pg.transform.scale(pg.image.load("./assets/images/black_rook.png"), (SQUARE_SIZE, SQUARE_SIZE))
 
         super().__init__(screen, name, color, image, row, col, board_map)
+
+        self.setPossibleMoves()
+
+    def setPossibleMoves(self):
+            
+        self.possible_moves = []
+
+        up = down = left = right = False
+
+        # Check every row/col on the rooks current square
+        # If there is no piece on a square in that direction, add to the possible moves
+        # If there is a piece but it is the opposite color, add to possible moves
+        #   but stop the movement in that direction
+        # If there is a piece of the same color, stop the movement in that direction
+
+        for i in range(0, 8):
+
+            if not up and self.row != self.row + i:
+                try:
+                    temp = self.board_map[(self.row + i, self.col)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row + i, self.col))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row + i, self.col))
+                        up = True
+                    else:
+                        up = True
+                except:
+                    pass
+
+            if not down and self.row != self.row - i:
+                try:
+                    temp = self.board_map[(self.row - i, self.col)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row - i, self.col))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row - i, self.col))
+                        down = True
+                    else:
+                        down = True
+                except:
+                    pass
+
+            if not right and self.col != self.col + i:
+                try:
+                    temp = self.board_map[(self.row, self.col + i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row, self.col + i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row, self.col + i))
+                        right = True
+                    else:
+                        right = True
+                except:
+                    pass
+            
+            if not left and self.col != self.col - i:
+                try:
+                    temp = self.board_map[(self.row, self.col - i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row, self.col - i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row, self.col - i))
+                        left = True
+                    else:
+                        left = True
+                except:
+                    pass
+
 
 class Bishop(Piece):
     def __init__(self, screen, name, row, col, board_map):
