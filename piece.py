@@ -142,7 +142,76 @@ class Knight(Piece):
         self.setPossibleMoves()
 
     def setPossibleMoves(self):
-        pass
+        
+        self.possible_moves = []
+
+        # Check (2, 1) and (1, 2) away from the current square  
+        # If there is no piece on the checked square or the 
+        #   piece is a different color, add it to possible moves
+
+        try:
+            temp = self.board_map[(self.row + 2, self.col + 1)].piece
+
+            if not temp or temp.color != self.color:
+                self.possible_moves.append((self.row + 2, self.col + 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row - 2, self.col + 1)].piece
+
+            if not temp or temp.color != self.color:
+                self.possible_moves.append((self.row - 2, self.col + 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row - 2, self.col - 1)].piece
+
+            if not temp or temp.color != self.color:
+                self.possible_moves.append((self.row - 2, self.col - 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row + 2, self.col - 1)].piece
+
+            if not temp or temp.color != self.color:
+                self.possible_moves.append((self.row + 2, self.col - 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row + 1, self.col + 2)].piece
+
+            if not temp or temp.color != self.color:
+                self.possible_moves.append((self.row + 1, self.col + 2))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row - 1, self.col + 2)].piece
+
+            if not temp or temp.color != self.color:
+                self.possible_moves.append((self.row - 1, self.col + 2))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row - 1, self.col - 2)].piece
+
+            if not temp or temp.color != self.color:
+                self.possible_moves.append((self.row - 1, self.col - 2))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row + 1, self.col - 2)].piece
+
+            if not temp or temp.color != self.color:
+                self.possible_moves.append((self.row + 1, self.col - 2))
+        except:
+            pass
 
 
 
@@ -241,6 +310,78 @@ class Bishop(Piece):
 
         super().__init__(screen, name, color, image, row, col, board_map)
 
+        self.setPossibleMoves()
+
+    def setPossibleMoves(self):    
+
+        self.possible_moves = []
+
+        up_left = down_left = up_right = down_right = False
+
+        # Check every diagonal on the bishops current square
+        # If there is no piece on a square in that direction, add to the possible moves
+        # If there is a piece but it is the opposite color, add to possible moves
+        #   but stop the movement in that direction
+        # If there is a piece of the same color, stop the movement in that direction
+
+        for i in range(0, 8):
+
+            if not down_right and self.row != self.row + i and self.col != self.col + i:
+                try:
+                    temp = self.board_map[(self.row + i, self.col + i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row + i, self.col + i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row + i, self.col + i))
+                        down_right = True
+                    else:
+                        down_right = True
+                except:
+                    pass
+
+            if not down_left and self.row != self.row + i and self.col != self.col - i:
+                try:
+                    temp = self.board_map[(self.row + i, self.col - i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row + i, self.col - i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row + i, self.col - i))
+                        down_left = True
+                    else:
+                        down_left = True
+                except:
+                    pass
+
+            if not up_right and self.row != self.row - i and self.col != self.col + i:
+                try:
+                    temp = self.board_map[(self.row - i, self.col + i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row - i, self.col + i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row - i, self.col + i))
+                        up_right = True
+                    else:
+                        up_right = True
+                except:
+                    pass
+            
+            if not up_left and self.row != self.row - i and self.col != self.col - i:
+                try:
+                    temp = self.board_map[(self.row - i, self.col - i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row - i, self.col - i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row - i, self.col - i))
+                        up_left = True
+                    else:
+                        up_left = True
+                except:
+                    pass
+
 class Queen(Piece):
     def __init__(self, screen, name, row, col, board_map):
         if name[0] == 'W':
@@ -251,6 +392,129 @@ class Queen(Piece):
             image = pg.transform.scale(pg.image.load("./assets/images/black_queen.png"), (SQUARE_SIZE, SQUARE_SIZE))
 
         super().__init__(screen, name, color, image, row, col, board_map)
+
+    def setPossibleMoves(self):
+        
+        self.possible_moves = []
+
+        up = down = left = right = up_left = up_right = down_left = down_right = False
+
+        # Basically just combine Bishop and Rook possible moves 
+
+        for i in range(0, 8):
+
+            if not up and self.row != self.row + i:
+                try:
+                    temp = self.board_map[(self.row + i, self.col)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row + i, self.col))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row + i, self.col))
+                        up = True
+                    else:
+                        up = True
+                except:
+                    pass
+
+            if not down and self.row != self.row - i:
+                try:
+                    temp = self.board_map[(self.row - i, self.col)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row - i, self.col))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row - i, self.col))
+                        down = True
+                    else:
+                        down = True
+                except:
+                    pass
+
+            if not right and self.col != self.col + i:
+                try:
+                    temp = self.board_map[(self.row, self.col + i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row, self.col + i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row, self.col + i))
+                        right = True
+                    else:
+                        right = True
+                except:
+                    pass
+            
+            if not left and self.col != self.col - i:
+                try:
+                    temp = self.board_map[(self.row, self.col - i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row, self.col - i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row, self.col - i))
+                        left = True
+                    else:
+                        left = True
+                except:
+                    pass
+
+            if not down_right and self.row != self.row + i and self.col != self.col + i:
+                try:
+                    temp = self.board_map[(self.row + i, self.col + i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row + i, self.col + i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row + i, self.col + i))
+                        down_right = True
+                    else:
+                        down_right = True
+                except:
+                    pass
+
+            if not down_left and self.row != self.row + i and self.col != self.col - i:
+                try:
+                    temp = self.board_map[(self.row + i, self.col - i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row + i, self.col - i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row + i, self.col - i))
+                        down_left = True
+                    else:
+                        down_left = True
+                except:
+                    pass
+
+            if not up_right and self.row != self.row - i and self.col != self.col + i:
+                try:
+                    temp = self.board_map[(self.row - i, self.col + i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row - i, self.col + i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row - i, self.col + i))
+                        up_right = True
+                    else:
+                        up_right = True
+                except:
+                    pass
+            
+            if not up_left and self.row != self.row - i and self.col != self.col - i:
+                try:
+                    temp = self.board_map[(self.row - i, self.col - i)].piece
+
+                    if not temp:
+                        self.possible_moves.append((self.row - i, self.col - i))
+                    elif temp.color != self.color:
+                        self.possible_moves.append((self.row - i, self.col - i))
+                        up_left = True
+                    else:
+                        up_left = True
+                except:
+                    pass
+
 
 class King(Piece):
     def __init__(self, screen, name, row, col, board_map):
