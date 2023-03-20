@@ -30,10 +30,6 @@ class Piece():
         rect.top = col
         self.screen.blit(self.image, rect)
 
-    def setPossibleMoves(self):
-        pass
-
- 
     def draw_moves(self):
         if self.captured: return
 
@@ -526,3 +522,74 @@ class King(Piece):
             image = pg.transform.scale(pg.image.load("./assets/images/black_king.png"), (SQUARE_SIZE, SQUARE_SIZE))
 
         super().__init__(screen, name, color, image, row, col, board_map)
+
+        self.setPossibleMoves()
+
+    def setPossibleMoves(self):
+        self.possible_moves = []
+
+        # King can only move one square in any direction
+
+        try:
+            temp = self.board_map[(self.row + 1, self.col)].piece
+
+            if not temp or self.color != temp.color:
+                self.possible_moves.append((self.row + 1, self.col))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row + 1, self.col + 1)].piece
+
+            if not temp or self.color != temp.color:
+                self.possible_moves.append((self.row + 1, self.col + 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row, self.col + 1)].piece
+
+            if not temp or self.color != temp.color:
+                self.possible_moves.append((self.row, self.col + 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row - 1, self.col + 1)].piece
+
+            if not temp or self.color != temp.color:
+                self.possible_moves.append((self.row - 1, self.col + 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row - 1, self.col)].piece
+
+            if not temp or self.color != temp.color:
+                self.possible_moves.append((self.row - 1, self.col))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row - 1, self.col - 1)].piece
+
+            if not temp or self.color != temp.color:
+                self.possible_moves.append((self.row - 1, self.col - 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row, self.col - 1)].piece
+
+            if not temp or self.color != temp.color:
+                self.possible_moves.append((self.row, self.col - 1))
+        except:
+            pass
+
+        try:
+            temp = self.board_map[(self.row + 1, self.col - 1)].piece
+
+            if not temp or self.color != temp.color:
+                self.possible_moves.append((self.row + 1, self.col - 1))
+        except:
+            pass
