@@ -2,6 +2,8 @@ import pygame as pg
 import const
 from piece import *
 
+# Testing a github thing
+
 class Board():
     def __init__(self, screen) -> None:
         self.screen = screen
@@ -10,6 +12,11 @@ class Board():
         self.active_piece = None
 
         self.turn = "white"
+
+        self.white_moves = []
+        self.black_moves = []
+
+        self.setMovesForAllPieces()
 
     def draw_board_array(self):
         board = [["" for j in range(8)] for i in range(8)]
@@ -48,8 +55,10 @@ class Board():
         self.board_map[(3, 7)].piece = Queen(self.screen, "WQ", 3, 7, self.board_map)
 
         # King ****
-        self.board_map[(4, 0)].piece = King(self.screen, "BK", 4, 0, self.board_map)
-        self.board_map[(4, 7)].piece = King(self.screen, "WK", 4, 7, self.board_map)
+        self.black_king = King(self.screen, "BK", 4, 0, self.board_map)
+        self.white_king = King(self.screen, "WK", 4, 7, self.board_map)
+        self.board_map[(4, 0)].piece = self.black_king
+        self.board_map[(4, 7)].piece = self.white_king
 
 
         print(board)
@@ -101,17 +110,55 @@ class Board():
         self.active_piece.hasMoved = True
 
         self.setMovesForAllPieces()
+        self.checkForCheck()
         
         if self.turn == 'white':
             self.turn = 'black'
         else:
             self.turn = 'white'
 
+    def checkForCheck(self):
+        if self.turn == "white":
+            for move in self.white_moves:
+                if move == (self.black_king.row, self.black_king.col):
+                    print("check")
+                    if self.checkForCheckmate():
+                        print("checkmate")
+
+        if self.turn == "black":
+            for move in self.black_moves:
+                if move == (self.white_king.row, self.white_king.col):
+                    print("check")
+                    if self.checkForCheckmate():
+                        print("checkmate")
+
+    def checkForCheckmate(self):
+        if self.turn == "white":
+            for move in self.black_king.possible_moves:
+                if move not in self.white_moves:
+                    return False
+
+        if self.turn == "black":
+            for move in self.white_king.possible_moves:
+                if move not in self.black_moves:
+                    return False 
+
+        return True
+
     def setMovesForAllPieces(self):
+        self.white_moves = []
+        self.black_moves = []
+
         for square in self.board_map.values():
             if square.piece:
                 square.piece.board_map = self.board_map
                 square.piece.setPossibleMoves()
+
+                for move in square.piece.possible_moves:
+                    if square.piece.color == "white":
+                        self.white_moves.append(move)
+                    else:
+                        self.black_moves.append(move)
 
     def draw(self):
         self.draw_board()
