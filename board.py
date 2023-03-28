@@ -10,10 +10,14 @@ class Board():
         self.board_map = {}
         self.board = self.draw_board_array()
         self.active_piece = None
+        self.attacking_piece = None
+        self.path_to_king = None
 
         self.turn = "white"
 
+        self.white_pieces = []
         self.white_moves = []
+        self.black_pieces = []
         self.black_moves = []
 
         self.setMovesForAllPieces()
@@ -118,33 +122,111 @@ class Board():
             self.turn = 'white'
 
     def checkForCheck(self):
+        self.path_to_king = []
+
         if self.turn == "white":
-            for move in self.white_moves:
-                if move == (self.black_king.row, self.black_king.col):
-                    print("check")
-                    if self.checkForCheckmate():
-                        print("checkmate")
+            for piece in self.white_pieces:
+                for move in piece.possible_moves:
+                    if move == (self.black_king.row, self.black_king.col):
+                        print("check")
+                        self.attacking_piece = piece
+                        self.path_to_king = self.getAttackingPiecePathToKing()
+                        if self.checkForCheckmate():
+                            print("checkmate")
+
+                if self.attacking_piece:
+                    break
 
         if self.turn == "black":
-            for move in self.black_moves:
-                if move == (self.white_king.row, self.white_king.col):
-                    print("check")
-                    if self.checkForCheckmate():
-                        print("checkmate")
+            for piece in self.black_pieces:
+                for move in piece.possible_moves:
+                    if move == (self.white_king.row, self.white_king.col):
+                        print("check")
+                        self.attacking_piece = piece
+                        self.path_to_king = self.getAttackingPiecePathToKing()
+                        if self.checkForCheckmate():
+                            print("checkmate")
 
+                if self.attacking_piece:
+                    break
+
+    
     def checkForCheckmate(self):
+        checkmate = True
+
         if self.turn == "white":
+            # Check if there is a move in king moves that will get it out of check
             for move in self.black_king.possible_moves:
                 if move not in self.white_moves:
-                    return False
+                    checkmate = False
+
+            # Check if there is a piece that can block the path of the attacking_piece
+            if self.path_to_king:
+                for piece in self.black_pieces:
+                    if piece.name[1] != 'K':
+                        for move in piece.possible_moves:
+                            if move in self.path_to_king:
+                                checkmate = False
+                            else:
+                                piece.possible_moves.remove(move)
 
         if self.turn == "black":
+            # Check if there is a move in king moves that will get it out of check
             for move in self.white_king.possible_moves:
                 if move not in self.black_moves:
-                    return False 
+                    checkmate = False 
 
-        return True
+            # Check if there is a piece that can block the path of the attacking_piece
+            if self.path_to_king:
+                for piece in self.black_pieces:
+                    if piece.name[1] != 'K':
+                        for move in piece.possible_moves:
+                            if move in self.path_to_king:
+                                checkmate = False
+                            else:
+                                piece.possible_moves.remove(move)
+    
+        return checkmate
 
+    def getAttackingPiecePathToKing(self):
+        if not self.attacking_piece: return
+
+        if self.attacking_piece.color == "white":
+            dx = self.black_king.row - self.attacking_piece.row
+            dy = self.black_king.col - self.attacking_piece.col
+            king_x, king_y = self.black_king.row, self.black_king.col
+        else:
+            dx = self.white_king.row - self.attacking_piece.row 
+            dy = self.white_king.col - self.attacking_piece.col
+            king_x, king_y = self.white_king.row, self.white_king.col
+
+        path_to_king = []
+
+        if self.attacking_piece.name[1] == 'R':
+            step_x, step_y = (dx // abs(dx), 0) if dx != 0 else (0, dy // abs(dy))
+        elif self.attacking_piece.name[1] == 'B':
+            if abs(dx) == abs(dy):
+                step_x, step_y = dx // abs(dx), dy // abs(dy)
+            else:
+                return path_to_king
+        elif self.attacking_piece.name[1] == 'Q':
+            if dx == 0 or dy == 0:
+                step_x, step_y = (dx // abs(dx), 0) if dx != 0 else (0, dy // abs(dy))
+            elif abs(dx) == abs(dy):
+                step_x, step_y = dx // abs(dx), dy // abs(dy)
+            else:
+                return path_to_king
+        else:
+            return path_to_king
+
+        current_x, current_y = self.attacking_piece.row + step_x, self.attacking_piece.col + step_y
+        while (current_x, current_y) != (king_x, king_y):
+            path_to_king.append((current_x, current_y))
+            current_x, current_y = current_x + step_x, current_y + step_y
+
+        return path_to_king
+
+        
     def setMovesForAllPieces(self):
         self.white_moves = []
         self.black_moves = []
@@ -153,6 +235,11 @@ class Board():
             if square.piece:
                 square.piece.board_map = self.board_map
                 square.piece.setPossibleMoves()
+
+                if square.piece.color == "white":
+                    self.white_pieces.append(square.piece)
+                else:
+                    self.black_pieces.append(square.piece)
 
                 for move in square.piece.possible_moves:
                     if square.piece.color == "white":
