@@ -49,6 +49,8 @@ class Pawn(Piece):
             color = "black"
             image = pg.transform.scale(pg.image.load("./assets/images/black_pawn.png"), (SQUARE_SIZE, SQUARE_SIZE))
 
+        self.score = 1
+
         super().__init__(screen, name, color, image, row, col, board_map)
             
         self.setPossibleMoves()
@@ -132,6 +134,8 @@ class Knight(Piece):
         else:
             color = "black"
             image = pg.transform.scale(pg.image.load("./assets/images/black_knight.png"), (SQUARE_SIZE, SQUARE_SIZE))
+
+        self.score = 3
 
         super().__init__(screen, name, color, image, row, col, board_map)
 
@@ -222,6 +226,9 @@ class Rook(Piece):
 
         super().__init__(screen, name, color, image, row, col, board_map)
 
+        self.score = 5
+        self.hasMoved = False
+
         self.setPossibleMoves()
 
     def setPossibleMoves(self):
@@ -303,6 +310,8 @@ class Bishop(Piece):
         else:
             color = "black"
             image = pg.transform.scale(pg.image.load("./assets/images/black_bishop.png"), (SQUARE_SIZE, SQUARE_SIZE))
+
+        self.score = 3
 
         super().__init__(screen, name, color, image, row, col, board_map)
 
@@ -386,6 +395,8 @@ class Queen(Piece):
         else:
             color = "black"
             image = pg.transform.scale(pg.image.load("./assets/images/black_queen.png"), (SQUARE_SIZE, SQUARE_SIZE))
+
+        self.score = 9
 
         super().__init__(screen, name, color, image, row, col, board_map)
 
@@ -523,7 +534,10 @@ class King(Piece):
 
         super().__init__(screen, name, color, image, row, col, board_map)
 
+        self.score = 200
+
         self.setPossibleMoves()
+        self.hasMoved = False
 
     def setPossibleMoves(self):
         self.possible_moves = []
@@ -593,3 +607,5 @@ class King(Piece):
                 self.possible_moves.append((self.row + 1, self.col - 1))
         except:
             pass
+
+                        
