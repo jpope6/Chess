@@ -11,10 +11,12 @@ class Game:
         pg.display.set_caption("Chess")
 
         self.board = chess.Board()
+        self.board_map = {}
         self.pieces = {}
         self.get_pieces()
 
         self.active_piece = None
+        self.active_piece_square = -1
 
 
     def get_full_piece_name(self, piece):
@@ -29,6 +31,7 @@ class Game:
         piece_color = "white" if piece.color == chess.WHITE else "black"
         return piece_color + "_" + piece_name_map[piece.symbol().upper()]
 
+
     def get_pieces(self):
         for piece in chess.PIECE_NAMES:
             for color in chess.COLORS:
@@ -42,10 +45,23 @@ class Game:
                     self.pieces[f"{name}"] = image
 
 
-    def draw_legal_moves(self):
+    def square_to_row(self, square):
+        return chess.square_rank(square)
+
+    def square_to_col(self, square):
+        return chess.square_file(square)
+
+
+    def draw_legal_moves(self, piece_square):
         if not self.active_piece: return
 
+        legal_moves = [move for move in self.board.legal_moves if move.from_square == piece_square]
 
+        for move in legal_moves:
+            to_square = chess.square_mirror(move.to_square)
+            row, col = self.square_to_row(to_square), self.square_to_col(to_square)
+            rect = pg.Rect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+            pg.draw.rect(self.screen, GREEN, rect, 3)
 
 
     def draw_board(self):
@@ -64,6 +80,7 @@ class Game:
                     ])
 
                 piece = self.board.piece_at(chess.square_mirror(row * 8 + col))
+                self.board_map[chess.square_mirror(row * 8 + col)] = piece
                 if piece:
                     piece_name = self.get_full_piece_name(piece)
 
@@ -85,16 +102,12 @@ class Game:
 
                     if piece and piece.color == self.board.turn:
                         self.active_piece = piece
+                        self.active_piece_square = chess.square_mirror(mouse_y * 8 + mouse_x)
                     else:
                         self.active_piece = None
 
-                    legal_moves = list(self.board.legal_moves)
-
-                    print(legal_moves)
-
-        
-            self.draw_legal_moves()
             self.draw_board()
+            self.draw_legal_moves(self.active_piece_square)
             pg.display.update()
 
 
