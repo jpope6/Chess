@@ -11,7 +11,6 @@ class Game:
         pg.display.set_caption("Chess")
 
         self.board = chess.Board()
-        self.board_map = {}
         self.pieces = {}
         self.get_pieces()
 
@@ -44,6 +43,20 @@ class Game:
                     image = pg.transform.scale(image, (SQUARE_SIZE, SQUARE_SIZE))
                     self.pieces[f"{name}"] = image
 
+
+    def move_piece(self, square):
+        if not self.active_piece: return
+
+        from_square = self.active_piece_square
+        to_square = square
+
+        move = chess.Move(from_square, to_square)
+
+        if move in self.board.legal_moves:
+            self.board.push(move)
+
+            print(self.board)
+    
 
     def square_to_row(self, square):
         return chess.square_rank(square)
@@ -80,7 +93,6 @@ class Game:
                     ])
 
                 piece = self.board.piece_at(chess.square_mirror(row * 8 + col))
-                self.board_map[chess.square_mirror(row * 8 + col)] = piece
                 if piece:
                     piece_name = self.get_full_piece_name(piece)
 
@@ -94,7 +106,7 @@ class Game:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     sys.exit()
-                if event.type == pg.MOUSEBUTTONDOWN:
+                elif event.type == pg.MOUSEBUTTONDOWN:
                     mouse_pos = pg.mouse.get_pos()
                     mouse_x = mouse_pos[0] // SQUARE_SIZE
                     mouse_y = mouse_pos[1] // SQUARE_SIZE
@@ -105,6 +117,15 @@ class Game:
                         self.active_piece_square = chess.square_mirror(mouse_y * 8 + mouse_x)
                     else:
                         self.active_piece = None
+
+                elif event.type == pg.MOUSEBUTTONUP:
+                    mouse_pos = pg.mouse.get_pos()
+                    mouse_x = mouse_pos[0] // SQUARE_SIZE
+                    mouse_y = mouse_pos[1] // SQUARE_SIZE
+                    square = chess.square_mirror(mouse_y * 8 + mouse_x)
+
+                    self.move_piece(square)
+
 
             self.draw_board()
             self.draw_legal_moves(self.active_piece_square)
