@@ -116,6 +116,8 @@ class Game:
                         self.active_piece = piece
                         self.active_piece_square = chess.square_mirror(mouse_y * 8 + mouse_x)
                     else:
+                        square = chess.square_mirror(mouse_y * 8 + mouse_x)
+                        self.move_piece(square)
                         self.active_piece = None
 
                 elif event.type == pg.MOUSEBUTTONUP:
