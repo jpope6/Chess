@@ -2,6 +2,7 @@ import pygame as pg
 import chess
 from const import *
 import sys
+from popebot import Popebot
 
 class Game:
     def __init__(self):
@@ -16,6 +17,8 @@ class Game:
 
         self.active_piece = None
         self.active_piece_square = -1
+
+        self.popebot = Popebot(self.board, "black")
 
 
     def get_full_piece_name(self, piece):
@@ -102,6 +105,11 @@ class Game:
     def play(self):
         while True:
             self.screen.fill(BLACK)
+            if self.board.turn == chess.BLACK:
+                best_move = self.popebot.get_best_move(self.popebot.depth)
+
+                if best_move:
+                    self.board.push(best_move)
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -127,6 +135,9 @@ class Game:
                     square = chess.square_mirror(mouse_y * 8 + mouse_x)
 
                     self.move_piece(square)
+                    self.draw_board()
+
+ 
 
 
             self.draw_board()
