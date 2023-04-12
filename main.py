@@ -18,7 +18,7 @@ class Game:
         self.active_piece = None
         self.active_piece_square = -1
 
-        self.popebot = Popebot(self.board, "black")
+        self.popebot = Popebot(self.board, "white")
 
 
     def get_full_piece_name(self, piece):
@@ -105,7 +105,7 @@ class Game:
     def play(self):
         while True:
             self.screen.fill(BLACK)
-            if self.board.turn == chess.BLACK:
+            if self.board.turn == chess.WHITE:
                 best_move = self.popebot.get_best_move(self.popebot.depth)
 
                 if best_move:

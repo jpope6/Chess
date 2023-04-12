@@ -1,10 +1,13 @@
 import chess
+import chess.polyglot
 
 class Popebot:
     def __init__(self, board, color) -> None:
         self.board = board
         self.color = color
-        self.depth = 4
+        self.depth = 3
+
+        self.opening_book = "./assets/files/openings.bin"
 
     def is_endgame(self):
         total_material = 0
@@ -20,8 +23,75 @@ class Popebot:
             total_material += len(self.board.pieces(piece_type, chess.WHITE)) * piece_values[piece_type]
             total_material += len(self.board.pieces(piece_type, chess.BLACK)) * piece_values[piece_type]
     
-        endgame_material_threshold = 14  # You can adjust this value based on your preference
+        endgame_material_threshold = 14 
         return total_material <= endgame_material_threshold
+
+    def evaluate_mobility(self):
+        score = 0
+        for move in self.board.legal_moves:
+            if self.board.turn == chess.WHITE:
+                score += 1
+            else:
+                score -= 1
+        return score
+
+    def evaluate_pawn_structure(self):
+        score = 0
+        doubled_pawns = [0] * 8
+        isolated_pawns = [0] * 8
+    
+        for square in chess.SQUARES:
+            piece = self.board.piece_at(square)
+    
+            if piece and piece.piece_type == chess.PAWN:
+                file = chess.square_file(square)
+                rank = chess.square_rank(square)
+    
+                # Doubled pawns
+                if doubled_pawns[file]:
+                    if piece.color == chess.WHITE:
+                        score -= 50
+                    else:
+                        score += 50
+                else:
+                    doubled_pawns[file] = 1
+    
+                # Isolated pawns
+                if file == 0:
+                    if not isolated_pawns[file + 1]:
+                        if piece.color == chess.WHITE:
+                            score -= 25
+                        else:
+                            score += 25
+                elif file == 7:
+                    if not isolated_pawns[file - 1]:
+                        if piece.color == chess.WHITE:
+                            score -= 25
+                        else:
+                            score += 25
+                else:
+                    if not isolated_pawns[file - 1] and not isolated_pawns[file + 1]:
+                        if piece.color == chess.WHITE:
+                            score -= 25
+                        else:
+                            score += 25
+
+                # Passed pawns
+                passed = True
+                for rank_offset in range(1, 8 - rank if piece.color == chess.WHITE else rank):
+                    square_forward = square + rank_offset * (8 if piece.color == chess.WHITE else -8)
+                    if self.board.piece_at(square_forward) and self.board.piece_at(square_forward).color != piece.color:
+                        passed = False
+                        break
+        
+    
+                if passed:
+                    if piece.color == chess.WHITE:
+                        score += 100 - rank * 10
+                    else:
+                        score -= 100 - (7 - rank) * 10
+    
+        return score
 
 
     def evaluate_board(self):
@@ -106,7 +176,7 @@ class Popebot:
             -20, -10, -10, -5, -5, -10, -10, -20
         ]
 
-        evaluation = 0
+        evaluation = self.evaluate_mobility() + self.evaluate_pawn_structure() + self.evaluate_mobility()
 
         for square in chess.SQUARES:
             piece = self.board.piece_at(square)
@@ -181,6 +251,7 @@ class Popebot:
         return moves
  
 
+# Use A *???
 
     def minimax(self, depth, is_maximizing_player, alpha, beta):
         if depth == 0 or self.board.is_game_over():
@@ -212,6 +283,16 @@ class Popebot:
             return min_eval
 
     def get_best_move(self, depth):
+        # First, check if there's a move in the opening book
+        with chess.polyglot.open_reader(self.opening_book) as reader:
+            try:
+                opening_move = reader.weighted_choice(self.board).move
+                return opening_move
+            except IndexError:
+                # No opening book move found, continue with your search algorithm
+                pass
+
+
         best_move = None
         best_eval = float('-inf')
 
