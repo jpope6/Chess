@@ -2,16 +2,16 @@
 Pygame Chess is a chess game application built using the Pygame library in Python. The game features a graphical user interface for playing chess against an AI opponent.
 
 ## Features
-Play chess against an AI opponent using the minimax algorithm with alpha-beta pruning
-Click on a piece to select it and click on a square to move it
-Legal moves are highlighted in green
-Supports all standard chess rules, including en passant, castling, and promotion
-Graphics are implemented using Pygame, making it easy to customize the look and feel of the game
-Can be run on any platform that supports Python and Pygame
+- Play chess against an AI opponent using the minimax algorithm with alpha-beta pruning
+- Click on a piece to select it and click on a square to move it
+- Legal moves are highlighted in green
+- Supports all standard chess rules, including en passant, castling, and promotion
+- Graphics are implemented using Pygame, making it easy to customize the look and feel of the game
+- Can be run on any platform that supports Python and Pygame
 ## Requirements
-Python 3.x
-Pygame
-python-chess
+- Python 3.x
+- Pygame
+- chess
 ## Installation
 To install Pygame Chess, follow these steps:
 
