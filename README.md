@@ -23,9 +23,9 @@ pip install chess
 ```
 Run the game: 
 ```
-python main.py
+python3 main.py
 ```
-If you encounter any issues installing Pygame or python-chess, please refer to their respective documentation for further instructions.
+If you encounter any issues installing Pygame or chess, please refer to their respective documentation for further instructions.
 
 ## Usage
 To play the game, simply click on a piece to select it, and then click on a legal move to move the piece to that square. Legal moves are highlighted in green. The AI opponent will automatically make its move after you have made yours.
