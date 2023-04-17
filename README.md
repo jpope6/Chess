@@ -19,7 +19,7 @@ Clone the repository to your local machine
 Install the required dependencies using pip:
 ```
 pip install pygame
-pip install python-chess
+pip install chess
 ```
 Run the game: 
 ```
